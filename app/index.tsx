@@ -20,7 +20,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 11 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -28,7 +28,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 12 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -36,7 +36,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 13 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -44,7 +44,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 14 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -52,7 +52,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 15 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -60,7 +60,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 16 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -68,7 +68,7 @@ export default function Index() {
 				/>
 				<RoutineCard
 					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
+					timeRemaining='18 min 17 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -81,8 +81,8 @@ export default function Index() {
 
 const styles = StyleSheet.create({
 	container: {
-		paddingLeft: 10,
-		paddingRight: 10,
+		paddingHorizontal: 10,
+		paddingBottom: 70,
 	},
 	title: {
 		fontSize: 25,

@@ -29,36 +29,20 @@ export default function RoutineCard({ currentTaskName, timeRemaining, tasks }: R
 	const [isEnabled, setIsEnabled] = useState(false);
 	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
-	const [showMore, setShowMore] = useState(false);
-
 	return (
 		<View style={styles.container}>
-			<View style={styles.top}>
-				<ThemedText style={styles.routineTitle}>{currentTaskName}</ThemedText>
-				<View style={styles.routineRight}>
-					<ThemedText>in {timeRemaining}</ThemedText>
-					<Switch
-						trackColor={{ false: "#767577", true: "#007C21" }}
-						thumbColor='#ffffff'
-						ios_backgroundColor='#3e3e3e'
-						onValueChange={toggleSwitch}
-						value={isEnabled}
-					/>
-				</View>
+			<ThemedText style={styles.routineTitle}>{currentTaskName}</ThemedText>
+			<View style={styles.routineRight}>
+				<ThemedText>in {timeRemaining}</ThemedText>
+				<Switch
+					trackColor={{ false: "#767577", true: "#00b02f" }}
+					thumbColor='#ffffff'
+					ios_backgroundColor='#3e3e3e'
+					onValueChange={toggleSwitch}
+					value={isEnabled}
+					style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
+				/>
 			</View>
-			{showMore && (
-				<View style={styles.tasks}>
-					{tasks.map((task) => (
-						<>
-							<Task key={task.timeRange} name={task.name} timeRange={task.timeRange} />
-						</>
-					))}
-				</View>
-			)}
-
-			<Pressable onPress={() => setShowMore(!showMore)}>
-				<View style={styles.showMoreLessBtn}>{showMore ? <ShowMore /> : <ShowLess />}</View>
-			</Pressable>
 		</View>
 	);
 }
@@ -67,12 +51,9 @@ const styles = StyleSheet.create({
 	container: {
 		backgroundColor: "#161842",
 		borderRadius: 12,
-		paddingTop: 10,
-		paddingBottom: 15,
-		paddingLeft: 15,
-		paddingRight: 15,
-	},
-	top: {
+		paddingTop: 20,
+		paddingBottom: 25,
+		paddingHorizontal: 20,
 		fontSize: 5,
 		flexDirection: "row",
 		justifyContent: "space-between",
@@ -93,10 +74,5 @@ const styles = StyleSheet.create({
 	task: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-	showMoreLessBtn: {
-		height: 30,
-		width: 30,
-		marginTop: 10,
 	},
 });
