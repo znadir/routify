@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import ThemedText from "../components/MyText";
+import ThemedText from "../components/ThemedText";
 import RoutineCard from "@/components/RoutineCard";
 
 export default function Index() {
