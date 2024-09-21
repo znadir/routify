@@ -1,8 +1,17 @@
 import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
+import AddIcon from "@/assets/svg/add-icon.svg";
 import { useState } from "react";
-import { View, StyleSheet, TextInput, Switch, Pressable } from "react-native";
+import { View, StyleSheet, Switch, Pressable } from "react-native";
 
+function TaskCard() {
+	return (
+		<View style={styles.taskCard}>
+			<ThemedText style={styles.cardText}>École à 8h</ThemedText>
+			<ThemedText style={styles.cardText}>6h08 à 6h33</ThemedText>
+		</View>
+	);
+}
 export default function Routine() {
 	const [routineName, setRoutineName] = useState("Routine Name");
 	const [alarmSwitch, setAlarmSwitch] = useState(false);
@@ -38,6 +47,14 @@ export default function Routine() {
 					style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
 				/>
 			</Pressable>
+			<View style={styles.cardsContainer}>
+				<TaskCard />
+
+				<View style={styles.addCard}>
+					<AddIcon />
+					<ThemedText style={styles.cardText}>Add Task</ThemedText>
+				</View>
+			</View>
 		</View>
 	);
 }
@@ -60,5 +77,26 @@ const styles = StyleSheet.create({
 	},
 	textItem: {
 		color: "#7199FF",
+	},
+	cardsContainer: {
+		gap: 15,
+	},
+	taskCard: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		padding: 20,
+		backgroundColor: "#181818",
+		borderRadius: 10,
+	},
+	addCard: {
+		flexDirection: "row",
+		alignItems: "center",
+		backgroundColor: "#212121",
+		borderRadius: 10,
+		padding: 20,
+		gap: 10,
+	},
+	cardText: {
+		fontSize: 16,
 	},
 });
