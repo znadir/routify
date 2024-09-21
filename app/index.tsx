@@ -1,8 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import ThemedText from "../components/ThemedText";
 import RoutineCard from "@/components/RoutineCard";
+import { setBackgroundColorAsync } from "expo-navigation-bar";
 
 export default function Index() {
+	setBackgroundColorAsync("black");
+
 	return (
 		<View>
 			<ThemedText style={styles.title}>
