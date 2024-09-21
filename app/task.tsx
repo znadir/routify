@@ -1,5 +1,5 @@
 import ThemedText from "@/components/MyText";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 export default function Task() {
 	return (
@@ -9,4 +9,4 @@ export default function Task() {
 	);
 }
 
-const styles = {};
+const styles = StyleSheet.create({});

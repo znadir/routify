@@ -1,10 +1,10 @@
-import { Animated, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import ThemedText from "../components/MyText";
 import RoutineCard from "@/components/RoutineCard";
 
 export default function Index() {
 	return (
-		<View style={styles.container}>
+		<View>
 			<ThemedText style={styles.title}>
 				Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
 			</ThemedText>
@@ -32,10 +32,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-	container: {
-		paddingHorizontal: 10,
-		paddingBottom: 70,
-	},
 	title: {
 		fontSize: 25,
 		marginBottom: 30,
