@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Animated, ScrollView, StyleSheet, View } from "react-native";
 import ThemedText from "../components/MyText";
 import RoutineCard from "@/components/RoutineCard";
 
@@ -9,7 +9,7 @@ export default function Index() {
 				Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
 			</ThemedText>
 
-			<ScrollView contentContainerStyle={styles.routines}>
+			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.routines}>
 				<RoutineCard
 					currentTaskName='École a 8h'
 					timeRemaining='18 min 10 sec'
@@ -21,54 +21,6 @@ export default function Index() {
 				<RoutineCard
 					currentTaskName='École a 8h'
 					timeRemaining='18 min 11 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 12 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 13 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 14 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 15 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 16 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 17 sec'
 					tasks={[
 						{ name: "Manger", timeRange: "8h - 8h 30" },
 						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
