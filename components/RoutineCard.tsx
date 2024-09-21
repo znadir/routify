@@ -2,8 +2,7 @@ import { View, Image, Pressable } from "react-native";
 import ThemedText from "./MyText";
 import { StyleSheet, Switch } from "react-native";
 import { useState } from "react";
-import ShowLess from "../assets/svg/showless-btn.svg";
-import ShowMore from "../assets/svg/showmore-btn.svg";
+import { router } from "expo-router";
 
 interface Routine {
 	currentTaskName: string;
@@ -25,12 +24,18 @@ function Task({ name, timeRange }: Task) {
 	);
 }
 
-export default function RoutineCard({ currentTaskName, timeRemaining, tasks }: Routine) {
+export default function RoutineCard({ currentTaskName, timeRemaining }: Routine) {
 	const [isEnabled, setIsEnabled] = useState(false);
 	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
 	return (
-		<View style={styles.container}>
+		<Pressable
+			style={({ pressed }) => [
+				{ backgroundColor: pressed ? "#191c4f" : "#161842" },
+				styles.container,
+			]}
+			onPress={(e) => router.push("/task")}
+		>
 			<ThemedText style={styles.routineTitle}>{currentTaskName}</ThemedText>
 			<View style={styles.routineRight}>
 				<ThemedText>in {timeRemaining}</ThemedText>
@@ -43,13 +48,12 @@ export default function RoutineCard({ currentTaskName, timeRemaining, tasks }: R
 					style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
 				/>
 			</View>
-		</View>
+		</Pressable>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "#161842",
 		borderRadius: 12,
 		paddingTop: 20,
 		paddingBottom: 25,

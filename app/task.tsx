@@ -1,7 +1,12 @@
-import { Text, View } from "react-native";
+import ThemedText from "@/components/MyText";
+import { View } from "react-native";
 
 export default function Task() {
-	return <View></View>;
+	return (
+		<View>
+			<ThemedText>Hello from /task</ThemedText>
+		</View>
+	);
 }
 
 const styles = {};
