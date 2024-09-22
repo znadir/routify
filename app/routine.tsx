@@ -71,19 +71,39 @@ export default function Routine() {
 
 				<View
 					style={{
-						gap: 20,
+						gap: 10,
 						flexDirection: "row",
+						justifyContent: "center",
+						alignItems: "center",
 						paddingVertical: 20,
-						justifyContent: "space-around",
 					}}
 				>
-					<ThemedText
-						style={{
-							fontSize: 30,
-						}}
+					<ThemedTextInput maxLength={2} style={styles.numberInput} />
+					<ThemedText style={styles.modalText}>:</ThemedText>
+					<ThemedTextInput maxLength={2} style={styles.numberInput} />
+					<ThemedText style={styles.modalText}>to</ThemedText>
+					<ThemedTextInput maxLength={2} style={styles.numberInput} />
+					<ThemedText style={styles.modalText}>:</ThemedText>
+					<ThemedTextInput maxLength={2} style={styles.numberInput} />
+				</View>
+
+				<View style={styles.buttons}>
+					<Pressable
+						style={({ pressed }) => [
+							styles.button,
+							{ backgroundColor: pressed ? "#1f008f" : "#190075" },
+						]}
 					>
-						06 : 33
-					</ThemedText>
+						<ThemedText>Add</ThemedText>
+					</Pressable>
+					<Pressable
+						style={({ pressed }) => [
+							styles.button,
+							{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },
+						]}
+					>
+						<ThemedText>Cancel</ThemedText>
+					</Pressable>
 				</View>
 			</View>
 		</View>
@@ -139,5 +159,25 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 20,
 		borderTopRightRadius: 20,
 		gap: 5,
+	},
+	modalText: {
+		fontSize: 20,
+	},
+	numberInput: {
+		width: 65,
+		backgroundColor: "black",
+		borderRadius: 5,
+		textAlign: "center",
+	},
+	buttons: {
+		flexDirection: "row",
+		gap: 20,
+	},
+	button: {
+		padding: 10,
+		borderRadius: 10,
+		flex: 1,
+		backgroundColor: "#000000",
+		alignItems: "center",
 	},
 });
