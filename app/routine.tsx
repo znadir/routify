@@ -12,8 +12,10 @@ function TaskCard() {
 		</View>
 	);
 }
+
 export default function Routine() {
 	const [routineName, setRoutineName] = useState("Routine Name");
+	const [taskName, setTaskName] = useState("Task Name");
 	const [alarmSwitch, setAlarmSwitch] = useState(false);
 	const toggleAlarmSwitch = () => setAlarmSwitch((previousState) => !previousState);
 
@@ -50,9 +52,38 @@ export default function Routine() {
 			<View style={styles.cardsContainer}>
 				<TaskCard />
 
-				<View style={styles.addCard}>
+				<Pressable
+					style={({ pressed }) => [
+						{ backgroundColor: pressed ? "#2b2b2b" : "#212121" },
+						styles.addCard,
+					]}
+				>
 					<AddIcon />
 					<ThemedText style={styles.cardText}>Add Task</ThemedText>
+				</Pressable>
+			</View>
+			<View style={styles.bottomModal}>
+				<ThemedTextInput
+					onChangeText={(text) => setTaskName(text)}
+					value={taskName}
+					placeholder={taskName}
+				/>
+
+				<View
+					style={{
+						gap: 20,
+						flexDirection: "row",
+						paddingVertical: 20,
+						justifyContent: "space-around",
+					}}
+				>
+					<ThemedText
+						style={{
+							fontSize: 30,
+						}}
+					>
+						06 : 33
+					</ThemedText>
 				</View>
 			</View>
 		</View>
@@ -62,6 +93,7 @@ export default function Routine() {
 const styles = StyleSheet.create({
 	container: {
 		gap: 20,
+		height: "100%",
 	},
 	alarmContainer: {
 		flexDirection: "row",
@@ -91,12 +123,21 @@ const styles = StyleSheet.create({
 	addCard: {
 		flexDirection: "row",
 		alignItems: "center",
-		backgroundColor: "#212121",
 		borderRadius: 10,
 		padding: 20,
 		gap: 10,
 	},
 	cardText: {
 		fontSize: 16,
+	},
+	bottomModal: {
+		position: "absolute",
+		bottom: 0,
+		width: "100%",
+		padding: 20,
+		backgroundColor: "#242424",
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		gap: 5,
 	},
 });

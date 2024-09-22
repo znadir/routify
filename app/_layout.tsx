@@ -8,7 +8,6 @@ export default function RootLayout() {
 				headerShown: false,
 				contentStyle: {
 					paddingTop: 80,
-					paddingBottom: 70,
 					paddingHorizontal: 10,
 					backgroundColor: "black",
 				},
