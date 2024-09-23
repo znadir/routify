@@ -2,7 +2,7 @@ import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Switch, Pressable, Animated } from "react-native";
+import { View, StyleSheet, Switch, Pressable, Animated, Easing, Keyboard } from "react-native";
 import { router } from "expo-router";
 
 function TaskCard() {
@@ -26,7 +26,8 @@ export default function Routine() {
 	useEffect(() => {
 		Animated.timing(modalAnim, {
 			toValue: modalVisible ? 0 : 300, // Show modal at 0 when visible
-			duration: 1000,
+			duration: 900,
+			easing: Easing.elastic(0),
 			useNativeDriver: true,
 		}).start();
 	}, [modalVisible]);
@@ -132,7 +133,10 @@ export default function Routine() {
 						<ThemedText>Add</ThemedText>
 					</Pressable>
 					<Pressable
-						onPress={() => setModalVisible(false)}
+						onPress={() => {
+							Keyboard.dismiss();
+							setModalVisible(false);
+						}}
 						style={({ pressed }) => [
 							styles.button,
 							{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },

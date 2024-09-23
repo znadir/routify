@@ -19,14 +19,27 @@ export default function Index() {
 					<ThemedText style={styles.subtitle}>13 min 10 sec left</ThemedText>
 					<View style={{ alignItems: "center" }}>
 						<CircularProgress
-							activeStrokeColor={"#ffffff"}
-							inActiveStrokeColor={"#3700FF"}
+							activeStrokeColor={"#3700FF"}
+							inActiveStrokeColor={"#ffffff"}
 							progressValueStyle={{ fontSize: 20, fontWeight: "400", color: "white" }}
-							value={25}
+							value={630}
+							radius={65}
+							duration={0}
 							progressFormatter={(value: number) => {
 								"worklet";
+								// convert to hh:min:sec
 
-								return "10:30";
+								const hours = Math.floor(value / 3600);
+								const minutes = Math.floor((value % 3600) / 60);
+								const seconds = Math.floor(value % 60);
+
+								const pad = (num: any) => (num < 10 ? `0${num}` : num);
+
+								return hours > 0
+									? `${hours}:${pad(minutes)}:${pad(seconds)}`
+									: minutes > 0
+									? `${minutes}:${pad(seconds)}`
+									: `${seconds}`;
 							}}
 						/>
 					</View>
