@@ -1,8 +1,8 @@
 import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
-import { useState } from "react";
-import { View, StyleSheet, Switch, Pressable } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Switch, Pressable, Animated } from "react-native";
 
 function TaskCard() {
 	return (
@@ -18,6 +18,17 @@ export default function Routine() {
 	const [taskName, setTaskName] = useState("Task Name");
 	const [alarmSwitch, setAlarmSwitch] = useState(false);
 	const toggleAlarmSwitch = () => setAlarmSwitch((previousState) => !previousState);
+
+	const [modalVisible, setModalVisible] = useState(false);
+	const modalAnim = useRef(new Animated.Value(300)).current;
+
+	useEffect(() => {
+		Animated.timing(modalAnim, {
+			toValue: modalVisible ? 0 : 300, // Show modal at 0 when visible
+			duration: 800,
+			useNativeDriver: true,
+		}).start();
+	}, [modalVisible]);
 
 	return (
 		<View style={styles.container}>
@@ -53,16 +64,18 @@ export default function Routine() {
 				<TaskCard />
 
 				<Pressable
+					onPress={() => setModalVisible(true)}
 					style={({ pressed }) => [
-						{ backgroundColor: pressed ? "#2b2b2b" : "#212121" },
 						styles.addCard,
+						{ backgroundColor: pressed ? "#2b2b2b" : "#212121" },
 					]}
 				>
 					<AddIcon />
 					<ThemedText style={styles.cardText}>Add Task</ThemedText>
 				</Pressable>
 			</View>
-			<View style={styles.bottomModal}>
+
+			<Animated.View style={[styles.bottomModal, { transform: [{ translateY: modalAnim }] }]}>
 				<ThemedTextInput
 					onChangeText={(text) => setTaskName(text)}
 					value={taskName}
@@ -97,6 +110,7 @@ export default function Routine() {
 						<ThemedText>Add</ThemedText>
 					</Pressable>
 					<Pressable
+						onPress={() => setModalVisible(false)}
 						style={({ pressed }) => [
 							styles.button,
 							{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },
@@ -105,7 +119,7 @@ export default function Routine() {
 						<ThemedText>Cancel</ThemedText>
 					</Pressable>
 				</View>
-			</View>
+			</Animated.View>
 		</View>
 	);
 }
