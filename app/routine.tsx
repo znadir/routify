@@ -3,6 +3,7 @@ import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Switch, Pressable, Animated } from "react-native";
+import { router } from "expo-router";
 
 function TaskCard() {
 	return (
@@ -25,7 +26,7 @@ export default function Routine() {
 	useEffect(() => {
 		Animated.timing(modalAnim, {
 			toValue: modalVisible ? 0 : 300, // Show modal at 0 when visible
-			duration: 800,
+			duration: 1000,
 			useNativeDriver: true,
 		}).start();
 	}, [modalVisible]);
@@ -74,8 +75,29 @@ export default function Routine() {
 					<ThemedText style={styles.cardText}>Add Task</ThemedText>
 				</Pressable>
 			</View>
+			<View style={[styles.bottom, styles.buttons, { marginBottom: 10 }]}>
+				<Pressable
+					style={({ pressed }) => [
+						styles.button,
+						{ backgroundColor: pressed ? "#278227" : "#237023" },
+					]}
+				>
+					<ThemedText>Save</ThemedText>
+				</Pressable>
+				<Pressable
+					onPress={() => router.back()}
+					style={({ pressed }) => [
+						styles.button,
+						{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },
+					]}
+				>
+					<ThemedText>Cancel</ThemedText>
+				</Pressable>
+			</View>
 
-			<Animated.View style={[styles.bottomModal, { transform: [{ translateY: modalAnim }] }]}>
+			<Animated.View
+				style={[styles.modal, styles.bottom, { transform: [{ translateY: modalAnim }] }]}
+			>
 				<ThemedTextInput
 					onChangeText={(text) => setTaskName(text)}
 					value={taskName}
@@ -104,7 +126,7 @@ export default function Routine() {
 					<Pressable
 						style={({ pressed }) => [
 							styles.button,
-							{ backgroundColor: pressed ? "#1f008f" : "#190075" },
+							{ backgroundColor: pressed ? "#363A9A" : "#2B2F7C" },
 						]}
 					>
 						<ThemedText>Add</ThemedText>
@@ -164,10 +186,12 @@ const styles = StyleSheet.create({
 	cardText: {
 		fontSize: 16,
 	},
-	bottomModal: {
+	bottom: {
 		position: "absolute",
 		bottom: 0,
 		width: "100%",
+	},
+	modal: {
 		padding: 20,
 		backgroundColor: "#242424",
 		borderTopLeftRadius: 20,
