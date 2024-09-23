@@ -56,14 +56,17 @@ export default function Index() {
 			</View>
 
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.routines}>
-				<RoutineCard
-					currentTaskName='École a 8h'
-					timeRemaining='18 min 10 sec'
-					tasks={[
-						{ name: "Manger", timeRange: "8h - 8h 30" },
-						{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-					]}
-				/>
+				{data.map((routine) => (
+					<RoutineCard
+						key={routine.id}
+						name={routine.name}
+						timeRemaining='18 min 10 sec'
+						tasks={[
+							{ name: "Manger", timeRange: "8h - 8h 30" },
+							{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
+						]}
+					/>
+				))}
 			</ScrollView>
 
 			<Pressable

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { router } from "expo-router";
 
 interface Routine {
-	currentTaskName: string;
+	name: string;
 	timeRemaining: string;
 	tasks: Task[];
 }
@@ -24,7 +24,7 @@ function Task({ name, timeRange }: Task) {
 	);
 }
 
-export default function RoutineCard({ currentTaskName, timeRemaining }: Routine) {
+export default function RoutineCard({ name, timeRemaining }: Routine) {
 	const [isEnabled, setIsEnabled] = useState(false);
 	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
@@ -36,7 +36,7 @@ export default function RoutineCard({ currentTaskName, timeRemaining }: Routine)
 			]}
 			onPress={(e) => router.navigate("/routine")}
 		>
-			<ThemedText style={styles.routineTitle}>{currentTaskName}</ThemedText>
+			<ThemedText style={styles.routineTitle}>{name}</ThemedText>
 			<View style={styles.routineRight}>
 				<ThemedText>in {timeRemaining}</ThemedText>
 				<Switch

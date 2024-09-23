@@ -11,7 +11,16 @@ export const routine = sqliteTable("routine", {
 	id: integer("id").primaryKey(),
 	name: text("name").notNull(),
 	enabled: integer("enabled", { mode: "boolean" }).notNull().default(false),
-	taskId: integer("task_id").references(() => task.id),
 	alarmName: text("alarmName").notNull(),
 	enableAlarm: integer("enableAlarm", { mode: "boolean" }).notNull().default(false),
+});
+
+export const routineTask = sqliteTable("routineTask", {
+	id: integer("id").primaryKey(),
+	routineId: integer("routineId")
+		.notNull()
+		.references(() => routine.id),
+	taskId: integer("taskId")
+		.notNull()
+		.references(() => task.id),
 });
