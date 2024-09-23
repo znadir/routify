@@ -5,6 +5,7 @@ export default function RootLayout() {
 		<Stack
 			screenOptions={{
 				headerShown: false,
+				animation: "fade_from_bottom",
 				contentStyle: {
 					paddingTop: 80,
 					paddingHorizontal: 10,
