@@ -6,8 +6,9 @@ import CircularProgress from "react-native-circular-progress-indicator";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { routine } from "../db/schema";
 import db from "../db/db";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import PlusIcon from "@/assets/svg/plus-icon.svg";
+import NoRoutine from "@/assets/svg/no-routine.svg";
 
 export default function Index() {
 	setBackgroundColorAsync("black");
@@ -18,7 +19,7 @@ export default function Index() {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				{data.length == 0 ? (
-					<ThemedText style={styles.title}>No Routines Found.</ThemedText>
+					<ThemedText style={styles.title}>No Routines Found. {"\n"}</ThemedText>
 				) : false ? (
 					<ThemedText style={styles.title}>
 						Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
@@ -67,6 +68,7 @@ export default function Index() {
 						]}
 					/>
 				))}
+				{data.length == 0 && <NoRoutine />}
 			</ScrollView>
 
 			<Pressable
@@ -105,6 +107,7 @@ const styles = StyleSheet.create({
 	},
 	routines: {
 		gap: 13,
+		alignItems: "center",
 	},
 	addBtn: {
 		position: "absolute",
