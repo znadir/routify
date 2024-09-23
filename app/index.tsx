@@ -19,7 +19,7 @@ export default function Index() {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				{data.length == 0 ? (
-					<ThemedText style={styles.title}>No Routines Found. {"\n"}</ThemedText>
+					<ThemedText style={styles.title}>No Routine Found. {"\n"}</ThemedText>
 				) : false ? (
 					<ThemedText style={styles.title}>
 						Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
@@ -76,7 +76,7 @@ export default function Index() {
 					styles.addBtn,
 					{ backgroundColor: pressed ? "#0036BF" : "#0031AC" },
 				]}
-				onPress={() => router.navigate("routine")}
+				onPress={() => router.navigate("/routine")}
 			>
 				<PlusIcon />
 			</Pressable>

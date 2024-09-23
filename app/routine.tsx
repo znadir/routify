@@ -3,7 +3,7 @@ import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Switch, Pressable, Animated, Easing, Keyboard } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
 
@@ -27,7 +27,7 @@ function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
 }
 
 export default function Routine() {
-	const [routineName, setRoutineName] = useState("Routine Name");
+	const [routineName, setRoutineName] = useState("");
 	const [taskName, setTaskName] = useState("Task Name");
 	const [alarmSwitch, setAlarmSwitch] = useState(false);
 	const toggleAlarmSwitch = () => setAlarmSwitch((previousState) => !previousState);
@@ -44,6 +44,8 @@ export default function Routine() {
 		}).start();
 	}, [modalVisible]);
 
+	// const { routineId } = useLocalSearchParams<{ id?: string }>();
+
 	const tasks = [
 		{ title: "Manger", timeRange: "8h - 8h 30" },
 		{ title: "Étudier", timeRange: "8h 30 - 9h 30" },
@@ -55,8 +57,9 @@ export default function Routine() {
 				<ThemedTextInput
 					onChangeText={(text) => setRoutineName(text)}
 					value={routineName}
-					placeholder={routineName}
+					placeholder='Routine Name'
 					style={styles.routineName}
+					placeholderTextColor='#3d3d3d'
 				/>
 				<Button
 					style={({ pressed }) => [
@@ -105,7 +108,7 @@ export default function Routine() {
 				</Pressable>
 			</View>
 
-			<View style={[styles.bottom, styles.buttons, { marginBottom: 10 }]}>
+			<View style={[styles.bottom, styles.buttons, { paddingBottom: 10 }]}>
 				<Button
 					style={({ pressed }) => [{ backgroundColor: pressed ? "#278227" : "#237023", flex: 1 }]}
 				>
