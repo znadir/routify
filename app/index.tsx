@@ -1,15 +1,13 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import ThemedText from "../components/ThemedText";
 import RoutineCard from "@/components/RoutineCard";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import CircularProgress from "react-native-circular-progress-indicator";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { routine } from "../db/schema";
-
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { openDatabaseSync } from "expo-sqlite/next";
-const expo = openDatabaseSync("routify.db", { enableChangeListener: true });
-const db = drizzle(expo);
+import db from "../db/db";
+import { router } from "expo-router";
+import PlusIcon from "@/assets/svg/plus-icon.svg";
 
 export default function Index() {
 	setBackgroundColorAsync("black");
@@ -18,42 +16,44 @@ export default function Index() {
 
 	return (
 		<View style={styles.container}>
-			{data.length == 0 ? (
-				<ThemedText style={styles.title}>No Routines Found.</ThemedText>
-			) : false ? (
-				<ThemedText style={styles.title}>
-					Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
-				</ThemedText>
-			) : (
-				<View style={styles.header}>
-					<ThemedText style={[styles.title, styles.important]}>Déjeuner</ThemedText>
-					<ThemedText style={styles.subtitle}>13 min 10 sec left</ThemedText>
-					<View style={{ alignItems: "center" }}>
-						<CircularProgress
-							activeStrokeColor={"#3700FF"}
-							inActiveStrokeColor={"#ffffff"}
-							progressValueStyle={{ fontSize: 20, fontWeight: "400", color: "white" }}
-							value={630}
-							radius={65}
-							duration={0}
-							progressFormatter={(value: number) => {
-								"worklet";
-								const hours = Math.floor(value / 3600);
-								const minutes = Math.floor((value % 3600) / 60);
-								const seconds = Math.floor(value % 60);
+			<View style={styles.header}>
+				{data.length == 0 ? (
+					<ThemedText style={styles.title}>No Routines Found.</ThemedText>
+				) : false ? (
+					<ThemedText style={styles.title}>
+						Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
+					</ThemedText>
+				) : (
+					<>
+						<ThemedText style={[styles.title, styles.important]}>Déjeuner</ThemedText>
+						<ThemedText style={styles.subtitle}>13 min 10 sec left</ThemedText>
+						<View style={{ alignItems: "center" }}>
+							<CircularProgress
+								activeStrokeColor={"#3700FF"}
+								inActiveStrokeColor={"#ffffff"}
+								progressValueStyle={{ fontSize: 20, fontWeight: "400", color: "white" }}
+								value={630}
+								radius={65}
+								duration={0}
+								progressFormatter={(value: number) => {
+									"worklet";
+									const hours = Math.floor(value / 3600);
+									const minutes = Math.floor((value % 3600) / 60);
+									const seconds = Math.floor(value % 60);
 
-								const pad = (num: any) => (num < 10 ? `0${num}` : num);
+									const pad = (num: any) => (num < 10 ? `0${num}` : num);
 
-								return hours > 0
-									? `${hours}:${pad(minutes)}:${pad(seconds)}`
-									: minutes > 0
-									? `${minutes}:${pad(seconds)}`
-									: `${seconds}`;
-							}}
-						/>
-					</View>
-				</View>
-			)}
+									return hours > 0
+										? `${hours}:${pad(minutes)}:${pad(seconds)}`
+										: minutes > 0
+										? `${minutes}:${pad(seconds)}`
+										: `${seconds}`;
+								}}
+							/>
+						</View>
+					</>
+				)}
+			</View>
 
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.routines}>
 				<RoutineCard
@@ -65,6 +65,16 @@ export default function Index() {
 					]}
 				/>
 			</ScrollView>
+
+			<Pressable
+				style={({ pressed }) => [
+					styles.addBtn,
+					{ backgroundColor: pressed ? "#0036BF" : "#0031AC" },
+				]}
+				onPress={() => router.push("routine")}
+			>
+				<PlusIcon />
+			</Pressable>
 		</View>
 	);
 }
@@ -72,9 +82,11 @@ export default function Index() {
 const styles = StyleSheet.create({
 	container: {
 		paddingBottom: 70,
+		height: "100%",
 	},
 	header: {
 		gap: 10,
+		marginBottom: 30,
 	},
 	title: {
 		fontSize: 25,
@@ -90,6 +102,13 @@ const styles = StyleSheet.create({
 	},
 	routines: {
 		gap: 13,
-		marginTop: 30,
+	},
+	addBtn: {
+		position: "absolute",
+		bottom: 10,
+		right: 10,
+		borderRadius: 100,
+		aspectRatio: 1,
+		padding: 17,
 	},
 });
