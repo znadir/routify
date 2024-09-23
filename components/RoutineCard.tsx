@@ -34,7 +34,7 @@ export default function RoutineCard({ currentTaskName, timeRemaining }: Routine)
 				{ backgroundColor: pressed ? "#191c4f" : "#161842" },
 				styles.container,
 			]}
-			onPress={(e) => router.push("/routine")}
+			onPress={(e) => router.navigate("/routine")}
 		>
 			<ThemedText style={styles.routineTitle}>{currentTaskName}</ThemedText>
 			<View style={styles.routineRight}>

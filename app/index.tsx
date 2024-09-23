@@ -6,7 +6,7 @@ import CircularProgress from "react-native-circular-progress-indicator";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { routine } from "../db/schema";
 import db from "../db/db";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import PlusIcon from "@/assets/svg/plus-icon.svg";
 
 export default function Index() {
@@ -71,7 +71,7 @@ export default function Index() {
 					styles.addBtn,
 					{ backgroundColor: pressed ? "#0036BF" : "#0031AC" },
 				]}
-				onPress={() => router.push("routine")}
+				onPress={() => router.navigate("routine")}
 			>
 				<PlusIcon />
 			</Pressable>
