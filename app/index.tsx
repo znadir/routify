@@ -3,13 +3,24 @@ import ThemedText from "../components/ThemedText";
 import RoutineCard from "@/components/RoutineCard";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import CircularProgress from "react-native-circular-progress-indicator";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { routine } from "../db/schema";
+
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
+const expo = openDatabaseSync("routify.db", { enableChangeListener: true });
+const db = drizzle(expo);
 
 export default function Index() {
 	setBackgroundColorAsync("black");
 
+	const { data } = useLiveQuery(db.select().from(routine));
+
 	return (
 		<View style={styles.container}>
-			{false ? (
+			{data.length == 0 ? (
+				<ThemedText style={styles.title}>No Routines Found.</ThemedText>
+			) : false ? (
 				<ThemedText style={styles.title}>
 					Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
 				</ThemedText>
