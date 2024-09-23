@@ -4,12 +4,24 @@ import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Switch, Pressable, Animated, Easing, Keyboard } from "react-native";
 import { router } from "expo-router";
+import Button from "@/components/Button";
+import TrashIcon from "@/assets/svg/trash-icon.svg";
 
-function TaskCard() {
+function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
 	return (
 		<View style={styles.taskCard}>
-			<ThemedText style={styles.cardText}>École à 8h</ThemedText>
-			<ThemedText style={styles.cardText}>6h08 à 6h33</ThemedText>
+			<ThemedText style={styles.cardText}>{title}</ThemedText>
+			<View style={styles.taskCardRight}>
+				<ThemedText style={styles.cardText}>{timeRange}</ThemedText>
+				<Button
+					style={({ pressed }) => [
+						styles.trashButton,
+						{ backgroundColor: pressed ? "#3E3E3E" : "#313131" },
+					]}
+				>
+					<TrashIcon />
+				</Button>
+			</View>
 		</View>
 	);
 }
@@ -32,20 +44,33 @@ export default function Routine() {
 		}).start();
 	}, [modalVisible]);
 
+	const tasks = [
+		{ title: "Manger", timeRange: "8h - 8h 30" },
+		{ title: "Étudier", timeRange: "8h 30 - 9h 30" },
+	];
+
 	return (
 		<View style={styles.container}>
-			<ThemedTextInput
-				onChangeText={(text) => setRoutineName(text)}
-				value={routineName}
-				placeholder={routineName}
-				style={{ paddingHorizontal: 20 }}
-			/>
+			<View style={styles.topView}>
+				<ThemedTextInput
+					onChangeText={(text) => setRoutineName(text)}
+					value={routineName}
+					placeholder={routineName}
+					style={styles.routineName}
+				/>
+				<Button
+					style={({ pressed }) => [
+						styles.trashButton,
+						{ backgroundColor: pressed ? "#7a0000" : "#680000" },
+					]}
+				>
+					<TrashIcon />
+				</Button>
+			</View>
 
 			<Pressable
 				style={({ pressed }) => [
-					{
-						backgroundColor: pressed ? "#0f0f0f" : "#000000",
-					},
+					{ backgroundColor: pressed ? "#0f0f0f" : "#000000" },
 					styles.alarmContainer,
 				]}
 			>
@@ -62,8 +87,11 @@ export default function Routine() {
 					style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
 				/>
 			</Pressable>
+
 			<View style={styles.cardsContainer}>
-				<TaskCard />
+				{tasks.map((task, i) => (
+					<TaskCard key={i} title={task.title} timeRange={task.timeRange} />
+				))}
 
 				<Pressable
 					onPress={() => setModalVisible(true)}
@@ -76,24 +104,19 @@ export default function Routine() {
 					<ThemedText style={styles.cardText}>Add Task</ThemedText>
 				</Pressable>
 			</View>
+
 			<View style={[styles.bottom, styles.buttons, { marginBottom: 10 }]}>
-				<Pressable
-					style={({ pressed }) => [
-						styles.button,
-						{ backgroundColor: pressed ? "#278227" : "#237023" },
-					]}
+				<Button
+					style={({ pressed }) => [{ backgroundColor: pressed ? "#278227" : "#237023", flex: 1 }]}
 				>
 					<ThemedText>Save</ThemedText>
-				</Pressable>
-				<Pressable
+				</Button>
+				<Button
 					onPress={() => router.back()}
-					style={({ pressed }) => [
-						styles.button,
-						{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },
-					]}
+					style={({ pressed }) => [{ backgroundColor: pressed ? "#4d4d4d" : "#373737", flex: 1 }]}
 				>
 					<ThemedText>Cancel</ThemedText>
-				</Pressable>
+				</Button>
 			</View>
 
 			<Animated.View
@@ -124,26 +147,20 @@ export default function Routine() {
 				</View>
 
 				<View style={styles.buttons}>
-					<Pressable
-						style={({ pressed }) => [
-							styles.button,
-							{ backgroundColor: pressed ? "#363A9A" : "#2B2F7C" },
-						]}
+					<Button
+						style={({ pressed }) => [{ backgroundColor: pressed ? "#363A9A" : "#2B2F7C", flex: 1 }]}
 					>
 						<ThemedText>Add</ThemedText>
-					</Pressable>
-					<Pressable
+					</Button>
+					<Button
 						onPress={() => {
 							Keyboard.dismiss();
 							setModalVisible(false);
 						}}
-						style={({ pressed }) => [
-							styles.button,
-							{ backgroundColor: pressed ? "#4d4d4d" : "#373737" },
-						]}
+						style={({ pressed }) => [{ backgroundColor: pressed ? "#4d4d4d" : "#373737", flex: 1 }]}
 					>
 						<ThemedText>Cancel</ThemedText>
-					</Pressable>
+					</Button>
 				</View>
 			</Animated.View>
 		</View>
@@ -154,6 +171,14 @@ const styles = StyleSheet.create({
 	container: {
 		gap: 20,
 		height: "100%",
+	},
+	topView: {
+		flexDirection: "row",
+		gap: 10,
+	},
+	routineName: {
+		paddingHorizontal: 20,
+		flex: 1,
 	},
 	alarmContainer: {
 		flexDirection: "row",
@@ -176,9 +201,15 @@ const styles = StyleSheet.create({
 	taskCard: {
 		flexDirection: "row",
 		justifyContent: "space-between",
+		alignItems: "center",
 		padding: 20,
 		backgroundColor: "#181818",
 		borderRadius: 10,
+	},
+	taskCardRight: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 20,
 	},
 	addCard: {
 		flexDirection: "row",
@@ -194,6 +225,8 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		bottom: 0,
 		width: "100%",
+		backgroundColor: "#000000",
+		paddingTop: 10,
 	},
 	modal: {
 		padding: 20,
@@ -215,11 +248,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		gap: 20,
 	},
-	button: {
-		padding: 10,
-		borderRadius: 10,
-		flex: 1,
-		backgroundColor: "#000000",
-		alignItems: "center",
+	trashButton: {
+		aspectRatio: 1,
 	},
 });

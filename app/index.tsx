@@ -27,8 +27,6 @@ export default function Index() {
 							duration={0}
 							progressFormatter={(value: number) => {
 								"worklet";
-								// convert to hh:min:sec
-
 								const hours = Math.floor(value / 3600);
 								const minutes = Math.floor((value % 3600) / 60);
 								const seconds = Math.floor(value % 60);
