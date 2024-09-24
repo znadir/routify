@@ -17,6 +17,8 @@ import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
 import { timeRangeToString } from "@/utils/utils";
 import Toast from "react-native-root-toast";
+import { routineSchema, routineTaskSchema, taskSchema } from "../utils/schema";
+import db from "../utils/db";
 
 function AddTaskModal({
 	addTask,
@@ -246,6 +248,37 @@ export default function Routine() {
 		]);
 	};
 
+	const saveRoutine = async () => {
+		const routines = await db
+			.insert(routineSchema)
+			.values({
+				name: routineName,
+				enabled: true,
+				alarmName,
+				enableAlarm,
+			})
+			.returning({ insertedId: routineSchema.id });
+
+		// insert tasks
+		// tasks.forEach(async (task) => {
+		// 	const taskId = await db
+		// 		.insert(taskSchema)
+		// 		.values({
+		// 			name: task.title,
+		// 			startDayMin: task.startDayMin,
+		// 			endDayMin: task.endDayMin,
+		// 		})
+		// 		.returning({ insertedId: taskSchema.id });
+
+		// 	await db.insert(routineTaskSchema).values({
+		// 		routineId: routineId.insertedId,
+		// 		taskId: taskId.insertedId,
+		// 	});
+		// });
+
+		router.back();
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.topView}>
@@ -314,6 +347,7 @@ export default function Routine() {
 
 			<View style={[styles.bottom, styles.buttons, { paddingBottom: 10 }]}>
 				<Button
+					onPress={() => saveRoutine()}
 					style={({ pressed }) => [{ backgroundColor: pressed ? "#278227" : "#237023", flex: 1 }]}
 				>
 					<ThemedText>Save</ThemedText>

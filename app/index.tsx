@@ -4,16 +4,27 @@ import RoutineCard from "@/components/RoutineCard";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import CircularProgress from "react-native-circular-progress-indicator";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { routine } from "../utils/schema";
+import { routineSchema } from "../utils/schema";
 import db from "../utils/db";
 import { router } from "expo-router";
 import PlusIcon from "@/assets/svg/plus-icon.svg";
 import NoRoutine from "@/assets/svg/no-routine.svg";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import migrations from "@/drizzle/migrations";
 
 export default function Index() {
 	setBackgroundColorAsync("black");
 
-	const { data } = useLiveQuery(db.select().from(routine));
+	const { data } = useLiveQuery(db.select().from(routineSchema));
+	const { error } = useMigrations(db, migrations);
+
+	if (error) {
+		return (
+			<View>
+				<ThemedText>Migration error: {error.message}</ThemedText>
+			</View>
+		);
+	}
 
 	return (
 		<View style={styles.container}>
