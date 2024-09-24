@@ -35,11 +35,9 @@ function AddTaskModal({
 	}, [modalVisible]);
 
 	const addCallback = () => {
-		const startDayMin = parseInt(startHour) * 60 + parseInt(startMinute);
-		const endDayMin = parseInt(endHour) * 60 + parseInt(endMinute);
-
 		try {
-			addTask(taskName, startDayMin, endDayMin);
+			addTask(taskName, startHour, startMinute, endHour, endMinute);
+			setTaskName("");
 		} catch (e: any) {
 			Toast.show(e.toString(), {
 				backgroundColor: "red",
@@ -121,7 +119,15 @@ function AddTaskModal({
 	);
 }
 
-function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
+function TaskCard({
+	title,
+	timeRange,
+	onDelete,
+}: {
+	title: string;
+	timeRange: string;
+	onDelete: Function;
+}) {
 	return (
 		<View style={styles.taskCard}>
 			<ThemedText style={styles.cardText}>{title}</ThemedText>
@@ -132,6 +138,7 @@ function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
 						styles.trashButton,
 						{ backgroundColor: pressed ? "#3E3E3E" : "#313131" },
 					]}
+					onPress={() => onDelete()}
 				>
 					<TrashIcon />
 				</Button>
@@ -155,13 +162,38 @@ export default function Routine() {
 	const toggleAlarmSwitch = () => setEnableAlarm((previousState) => !previousState);
 	const [modalVisible, setModalVisible] = useState(false);
 
-	const addTask = (taskName: string, startDayMin: number, endDayMin: number) => {
-		if (taskName === "") {
-			throw new Error("Task name cannot be empty");
+	const addTask = (
+		taskName: string,
+		startHour: string,
+		startMinute: string,
+		endHour: string,
+		endMinute: string
+	) => {
+		// ensure all fields are numbers
+		if (
+			!taskName.match(/^\d+$/) &&
+			!startHour.match(/^\d+$/) &&
+			!startMinute.match(/^\d+$/) &&
+			!endHour.match(/^\d+$/) &&
+			!endMinute.match(/^\d+$/)
+		) {
+			throw new Error("All fields must be numbers");
 		}
 
-		if (startDayMin < 0 || startDayMin > 1440 || endDayMin < 0 || endDayMin > 1440) {
-			throw new Error("Invalid time range");
+		if (
+			parseInt(startHour) > 23 ||
+			parseInt(startMinute) > 59 ||
+			parseInt(endHour) > 23 ||
+			parseInt(endMinute) > 59
+		) {
+			throw new Error("All fields must be within range");
+		}
+
+		const startDayMin = parseInt(startHour) * 60 + parseInt(startMinute);
+		const endDayMin = parseInt(endHour) * 60 + parseInt(endMinute);
+
+		if (taskName === "") {
+			throw new Error("Task name cannot be empty");
 		}
 
 		if (startDayMin >= endDayMin) {
@@ -224,12 +256,16 @@ export default function Routine() {
 			</Pressable>
 
 			<View style={styles.cardsContainer}>
-				<ThemedText> Tasks : {tasks.length}</ThemedText>
 				{tasks.map((task, i) => (
 					<TaskCard
 						key={i}
 						title={task.title}
 						timeRange={timeRangeToString(task.startDayMin, task.endDayMin)}
+						onDelete={() => {
+							const newTasks = [...tasks];
+							newTasks.splice(i, 1);
+							setTasks(newTasks);
+						}}
 					/>
 				))}
 
