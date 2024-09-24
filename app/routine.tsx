@@ -2,7 +2,16 @@ import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Switch, Pressable, Animated, Easing, Keyboard } from "react-native";
+import {
+	View,
+	StyleSheet,
+	Switch,
+	Pressable,
+	Animated,
+	Easing,
+	Keyboard,
+	Alert,
+} from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
@@ -162,6 +171,8 @@ export default function Routine() {
 	const toggleAlarmSwitch = () => setEnableAlarm((previousState) => !previousState);
 	const [modalVisible, setModalVisible] = useState(false);
 
+	const { routineId } = useLocalSearchParams<{ routineId?: string }>();
+
 	const addTask = (
 		taskName: string,
 		startHour: string,
@@ -214,7 +225,26 @@ export default function Routine() {
 		setModalVisible(false);
 	};
 
-	// const { routineId } = useLocalSearchParams<{ id?: string }>();
+	const deleteRoutine = () => {
+		const confirmDelete = () => {
+			if (routineId) {
+				// delete routine with SQL
+			}
+
+			router.back();
+		};
+		Alert.alert("Delete Routine", "Are you sure you want to delete this routine?", [
+			{
+				text: "Cancel",
+				style: "cancel",
+			},
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => confirmDelete(),
+			},
+		]);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -230,6 +260,7 @@ export default function Routine() {
 						styles.trashButton,
 						{ backgroundColor: pressed ? "#7a0000" : "#680000" },
 					]}
+					onPress={deleteRoutine}
 				>
 					<TrashIcon />
 				</Button>
