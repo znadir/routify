@@ -6,6 +6,120 @@ import { View, StyleSheet, Switch, Pressable, Animated, Easing, Keyboard } from 
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
+import { timeRangeToString } from "@/utils/utils";
+import Toast from "react-native-root-toast";
+
+function AddTaskModal({
+	addTask,
+	setModalVisible,
+	modalVisible,
+}: {
+	addTask: Function;
+	setModalVisible: Function;
+	modalVisible: boolean;
+}) {
+	const modalAnim = useRef(new Animated.Value(300)).current;
+	const [taskName, setTaskName] = useState("");
+	const [startHour, setStartHour] = useState("08");
+	const [startMinute, setStartMinute] = useState("30");
+	const [endHour, setEndHour] = useState("10");
+	const [endMinute, setEndMinute] = useState("00");
+
+	useEffect(() => {
+		Animated.timing(modalAnim, {
+			toValue: modalVisible ? 0 : 300, // Show modal at 0 when visible
+			duration: 900,
+			easing: Easing.elastic(0),
+			useNativeDriver: true,
+		}).start();
+	}, [modalVisible]);
+
+	const addCallback = () => {
+		const startDayMin = parseInt(startHour) * 60 + parseInt(startMinute);
+		const endDayMin = parseInt(endHour) * 60 + parseInt(endMinute);
+
+		try {
+			addTask(taskName, startDayMin, endDayMin);
+		} catch (e: any) {
+			Toast.show(e.toString(), {
+				backgroundColor: "red",
+				position: Toast.positions.CENTER,
+			});
+		}
+	};
+
+	return (
+		<Animated.View
+			style={[styles.bottom, styles.modal, { transform: [{ translateY: modalAnim }] }]}
+		>
+			<ThemedTextInput
+				onChangeText={(text) => setTaskName(text)}
+				value={taskName}
+				placeholder='Task Name'
+			/>
+
+			<View
+				style={{
+					gap: 10,
+					flexDirection: "row",
+					justifyContent: "center",
+					alignItems: "center",
+					paddingVertical: 20,
+				}}
+			>
+				<ThemedTextInput
+					value={startHour}
+					onChangeText={setStartHour}
+					keyboardType='numeric'
+					maxLength={2}
+					style={styles.numberInput}
+				/>
+				<ThemedText style={styles.modalText}>:</ThemedText>
+				<ThemedTextInput
+					value={startMinute}
+					onChangeText={setStartMinute}
+					keyboardType='numeric'
+					maxLength={2}
+					style={styles.numberInput}
+				/>
+				<ThemedText style={styles.modalText}>to</ThemedText>
+				<ThemedTextInput
+					value={endHour}
+					onChangeText={setEndHour}
+					keyboardType='numeric'
+					maxLength={2}
+					style={styles.numberInput}
+				/>
+				<ThemedText style={styles.modalText}>:</ThemedText>
+				<ThemedTextInput
+					value={endMinute}
+					onChangeText={setEndMinute}
+					keyboardType='numeric'
+					maxLength={2}
+					style={styles.numberInput}
+				/>
+			</View>
+
+			<View style={styles.buttons}>
+				<Button
+					style={({ pressed }) => [{ backgroundColor: pressed ? "#363A9A" : "#2B2F7C", flex: 1 }]}
+					onPress={addCallback}
+				>
+					<ThemedText>Add</ThemedText>
+				</Button>
+				<Button
+					onPress={() => {
+						Keyboard.dismiss();
+						setModalVisible(false);
+					}}
+					style={({ pressed }) => [{ backgroundColor: pressed ? "#4d4d4d" : "#373737", flex: 1 }]}
+				>
+					<ThemedText>Cancel</ThemedText>
+				</Button>
+			</View>
+		</Animated.View>
+	);
+}
 
 function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
 	return (
@@ -26,30 +140,49 @@ function TaskCard({ title, timeRange }: { title: string; timeRange: string }) {
 	);
 }
 
+interface Task {
+	title: string;
+	startDayMin: number;
+	endDayMin: number;
+}
+
 export default function Routine() {
 	const [routineName, setRoutineName] = useState("");
-	const [taskName, setTaskName] = useState("Task Name");
-	const [alarmSwitch, setAlarmSwitch] = useState(false);
-	const toggleAlarmSwitch = () => setAlarmSwitch((previousState) => !previousState);
+	const alarmName = "Homecoming";
+	const [enableAlarm, setEnableAlarm] = useState(false);
+	const [tasks, setTasks] = useState<Task[]>([]);
 
+	const toggleAlarmSwitch = () => setEnableAlarm((previousState) => !previousState);
 	const [modalVisible, setModalVisible] = useState(false);
-	const modalAnim = useRef(new Animated.Value(300)).current;
 
-	useEffect(() => {
-		Animated.timing(modalAnim, {
-			toValue: modalVisible ? 0 : 300, // Show modal at 0 when visible
-			duration: 900,
-			easing: Easing.elastic(0),
-			useNativeDriver: true,
-		}).start();
-	}, [modalVisible]);
+	const addTask = (taskName: string, startDayMin: number, endDayMin: number) => {
+		if (taskName === "") {
+			throw new Error("Task name cannot be empty");
+		}
+
+		if (startDayMin < 0 || startDayMin > 1440 || endDayMin < 0 || endDayMin > 1440) {
+			throw new Error("Invalid time range");
+		}
+
+		if (startDayMin >= endDayMin) {
+			throw new Error("Start day must be before end day");
+		}
+
+		// ensure there's no other task that overlaps with this one
+		tasks.forEach((task) => {
+			if (
+				!(startDayMin < task.startDayMin && endDayMin < task.startDayMin) &&
+				!(startDayMin > task.endDayMin && endDayMin > task.endDayMin)
+			) {
+				throw new Error("Task overlaps with another task");
+			}
+		});
+
+		setTasks([...tasks, { title: taskName, startDayMin, endDayMin }]);
+		setModalVisible(false);
+	};
 
 	// const { routineId } = useLocalSearchParams<{ id?: string }>();
-
-	const tasks = [
-		{ title: "Manger", timeRange: "8h - 8h 30" },
-		{ title: "Étudier", timeRange: "8h 30 - 9h 30" },
-	];
 
 	return (
 		<View style={styles.container}>
@@ -59,7 +192,6 @@ export default function Routine() {
 					value={routineName}
 					placeholder='Routine Name'
 					style={styles.routineName}
-					placeholderTextColor='#3d3d3d'
 				/>
 				<Button
 					style={({ pressed }) => [
@@ -79,21 +211,26 @@ export default function Routine() {
 			>
 				<View style={styles.alarmLeft}>
 					<ThemedText style={styles.textOption}>Alarm Sound</ThemedText>
-					<ThemedText style={styles.textItem}>Homecoming</ThemedText>
+					<ThemedText style={styles.textItem}>{alarmName}</ThemedText>
 				</View>
 				<Switch
 					trackColor={{ false: "#767577", true: "#00b02f" }}
 					thumbColor='#ffffff'
 					ios_backgroundColor='#3e3e3e'
 					onValueChange={toggleAlarmSwitch}
-					value={alarmSwitch}
+					value={enableAlarm}
 					style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
 				/>
 			</Pressable>
 
 			<View style={styles.cardsContainer}>
+				<ThemedText> Tasks : {tasks.length}</ThemedText>
 				{tasks.map((task, i) => (
-					<TaskCard key={i} title={task.title} timeRange={task.timeRange} />
+					<TaskCard
+						key={i}
+						title={task.title}
+						timeRange={timeRangeToString(task.startDayMin, task.endDayMin)}
+					/>
 				))}
 
 				<Pressable
@@ -122,50 +259,11 @@ export default function Routine() {
 				</Button>
 			</View>
 
-			<Animated.View
-				style={[styles.modal, styles.bottom, { transform: [{ translateY: modalAnim }] }]}
-			>
-				<ThemedTextInput
-					onChangeText={(text) => setTaskName(text)}
-					value={taskName}
-					placeholder={taskName}
-				/>
-
-				<View
-					style={{
-						gap: 10,
-						flexDirection: "row",
-						justifyContent: "center",
-						alignItems: "center",
-						paddingVertical: 20,
-					}}
-				>
-					<ThemedTextInput maxLength={2} style={styles.numberInput} />
-					<ThemedText style={styles.modalText}>:</ThemedText>
-					<ThemedTextInput maxLength={2} style={styles.numberInput} />
-					<ThemedText style={styles.modalText}>to</ThemedText>
-					<ThemedTextInput maxLength={2} style={styles.numberInput} />
-					<ThemedText style={styles.modalText}>:</ThemedText>
-					<ThemedTextInput maxLength={2} style={styles.numberInput} />
-				</View>
-
-				<View style={styles.buttons}>
-					<Button
-						style={({ pressed }) => [{ backgroundColor: pressed ? "#363A9A" : "#2B2F7C", flex: 1 }]}
-					>
-						<ThemedText>Add</ThemedText>
-					</Button>
-					<Button
-						onPress={() => {
-							Keyboard.dismiss();
-							setModalVisible(false);
-						}}
-						style={({ pressed }) => [{ backgroundColor: pressed ? "#4d4d4d" : "#373737", flex: 1 }]}
-					>
-						<ThemedText>Cancel</ThemedText>
-					</Button>
-				</View>
-			</Animated.View>
+			<AddTaskModal
+				addTask={addTask}
+				setModalVisible={setModalVisible}
+				modalVisible={modalVisible}
+			/>
 		</View>
 	);
 }

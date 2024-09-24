@@ -1,7 +1,7 @@
 import { TextInput, type TextInputProps, StyleSheet } from "react-native";
 
 export default function ThemedTextInput({ style, ...rest }: TextInputProps) {
-	return <TextInput placeholderTextColor='white' style={[styles.input, style]} {...rest} />;
+	return <TextInput placeholderTextColor='#595959' style={[styles.input, style]} {...rest} />;
 }
 
 const styles = StyleSheet.create({
