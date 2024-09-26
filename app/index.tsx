@@ -71,9 +71,10 @@ export default function Index() {
 				{data.map((routine) => (
 					<RoutineCard
 						key={routine.id}
+						id={routine.id}
 						name={routine.name}
 						timeRemaining='18 min 10 sec'
-						enableAlarm={routine.enableAlarm}
+						enabled={routine.enabled}
 					/>
 				))}
 				{data.length == 0 && <NoRoutine />}

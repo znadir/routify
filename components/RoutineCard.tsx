@@ -2,16 +2,24 @@ import { View, Pressable, StyleSheet, Switch } from "react-native";
 import ThemedText from "./ThemedText";
 import { useState } from "react";
 import { router } from "expo-router";
+import db from "../utils/db";
+import { routineSchema } from "../utils/schema";
+import { eq } from "drizzle-orm";
 
 interface Routine {
+	id: number;
 	name: string;
 	timeRemaining: string;
-	enableAlarm: boolean;
+	enabled: boolean;
 }
 
-export default function RoutineCard({ name, timeRemaining, enableAlarm }: Routine) {
-	const [isEnabled, setIsEnabled] = useState(enableAlarm);
-	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+export default function RoutineCard({ id, name, timeRemaining, enabled }: Routine) {
+	const [isEnabled, setIsEnabled] = useState(enabled);
+	const toggleSwitch = async () => {
+		setIsEnabled((previousState) => !previousState);
+
+		await db.update(routineSchema).set({ enabled: isEnabled }).where(eq(routineSchema.id, id));
+	};
 
 	return (
 		<Pressable
