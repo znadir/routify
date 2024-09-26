@@ -73,10 +73,7 @@ export default function Index() {
 						key={routine.id}
 						name={routine.name}
 						timeRemaining='18 min 10 sec'
-						tasks={[
-							{ name: "Manger", timeRange: "8h - 8h 30" },
-							{ name: "Étudier", timeRange: "8h 30 - 9h 30" },
-						]}
+						enableAlarm={routine.enableAlarm}
 					/>
 				))}
 				{data.length == 0 && <NoRoutine />}

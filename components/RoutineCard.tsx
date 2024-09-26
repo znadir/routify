@@ -1,31 +1,16 @@
-import { View, Image, Pressable } from "react-native";
+import { View, Pressable, StyleSheet, Switch } from "react-native";
 import ThemedText from "./ThemedText";
-import { StyleSheet, Switch } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
 
 interface Routine {
 	name: string;
 	timeRemaining: string;
-	tasks: Task[];
+	enableAlarm: boolean;
 }
 
-interface Task {
-	name: string;
-	timeRange: string;
-}
-
-function Task({ name, timeRange }: Task) {
-	return (
-		<View style={styles.task}>
-			<ThemedText>{name}</ThemedText>
-			<ThemedText>{timeRange}</ThemedText>
-		</View>
-	);
-}
-
-export default function RoutineCard({ name, timeRemaining }: Routine) {
-	const [isEnabled, setIsEnabled] = useState(false);
+export default function RoutineCard({ name, timeRemaining, enableAlarm }: Routine) {
+	const [isEnabled, setIsEnabled] = useState(enableAlarm);
 	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
 	return (
@@ -71,13 +56,5 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		gap: 10,
-	},
-	tasks: {
-		marginTop: 15,
-		gap: 5,
-	},
-	task: {
-		flexDirection: "row",
-		justifyContent: "space-between",
 	},
 });
