@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import ThemedText from "../components/ThemedText";
 import RoutineCard from "@/components/RoutineCard";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
@@ -16,7 +16,7 @@ export default function Index() {
 	setBackgroundColorAsync("black");
 
 	const { data } = useLiveQuery(db.select().from(routineSchema));
-	const { error } = useMigrations(db, migrations);
+	const { success, error } = useMigrations(db, migrations);
 
 	if (error) {
 		return (
@@ -26,6 +26,13 @@ export default function Index() {
 		);
 	}
 
+	if (!success) {
+		return (
+			<View style={styles.center}>
+				<ActivityIndicator color='#0031AC' size='large' />
+			</View>
+		);
+	}
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
@@ -96,6 +103,11 @@ export default function Index() {
 const styles = StyleSheet.create({
 	container: {
 		paddingBottom: 70,
+		height: "100%",
+	},
+	center: {
+		justifyContent: "center",
+		alignItems: "center",
 		height: "100%",
 	},
 	header: {
