@@ -27,7 +27,7 @@ export default function RoutineCard({ id, name, timeRemaining, enabled }: Routin
 				{ backgroundColor: pressed ? "#191c4f" : "#161842" },
 				styles.container,
 			]}
-			onPress={(e) => router.navigate("/routine")}
+			onPress={(e) => router.navigate(`/routine?routineId=${id}`)}
 		>
 			<ThemedText style={styles.routineTitle}>{name}</ThemedText>
 			<View style={styles.routineRight}>

@@ -17,8 +17,9 @@ import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
 import { timeRangeToString } from "@/utils/utils";
 import Toast from "react-native-root-toast";
-import { routineSchema, routineTaskSchema, taskSchema } from "../utils/schema";
+import { routineSchema } from "../utils/schema";
 import db from "../utils/db";
+import { eq } from "drizzle-orm";
 
 function AddTaskModal({
 	addTask,
@@ -228,9 +229,9 @@ export default function Routine() {
 	};
 
 	const deleteRoutine = () => {
-		const confirmDelete = () => {
+		const confirmDelete = async () => {
 			if (routineId) {
-				// delete routine with SQL
+				await db.delete(routineSchema).where(eq(routineSchema.id, parseInt(routineId)));
 			}
 
 			router.back();
