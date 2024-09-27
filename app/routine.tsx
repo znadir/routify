@@ -11,6 +11,7 @@ import {
 	Easing,
 	Keyboard,
 	Alert,
+	ActivityIndicator,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
@@ -20,6 +21,7 @@ import Toast from "react-native-root-toast";
 import { routineSchema } from "../utils/schema";
 import db from "../utils/db";
 import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 function AddTaskModal({
 	addTask,
@@ -166,6 +168,15 @@ interface Task {
 }
 
 export default function Routine() {
+	const { routineId } = useLocalSearchParams<{ routineId?: string }>();
+
+	const { data } = useLiveQuery(
+		db
+			.select()
+			.from(routineSchema)
+			.where(eq(routineSchema.id, routineId ? parseInt(routineId) : 0))
+	);
+
 	const [routineName, setRoutineName] = useState("");
 	const alarmName = "Homecoming";
 	const [enableAlarm, setEnableAlarm] = useState(false);
@@ -174,7 +185,12 @@ export default function Routine() {
 	const toggleAlarmSwitch = () => setEnableAlarm((previousState) => !previousState);
 	const [modalVisible, setModalVisible] = useState(false);
 
-	const { routineId } = useLocalSearchParams<{ routineId?: string }>();
+	useEffect(() => {
+		if (routineId) {
+			setRoutineName(data[0]?.name);
+			setEnableAlarm(data[0]?.enableAlarm);
+		}
+	}, [data]);
 
 	const addTask = (
 		taskName: string,
@@ -280,6 +296,14 @@ export default function Routine() {
 		router.back();
 	};
 
+	if (data.length === 0 && routineId) {
+		return (
+			<View style={styles.center}>
+				<ActivityIndicator size='large' color='#7199FF' />
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.topView}>
@@ -373,6 +397,11 @@ export default function Routine() {
 const styles = StyleSheet.create({
 	container: {
 		gap: 20,
+		height: "100%",
+	},
+	center: {
+		justifyContent: "center",
+		alignItems: "center",
 		height: "100%",
 	},
 	topView: {
