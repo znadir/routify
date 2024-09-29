@@ -20,7 +20,7 @@ export default function Index() {
 	const { data } = useLiveQuery(db.select().from(routineSchema));
 	const { success, error } = useMigrations(db, migrations);
 	const [routineTimes, setRoutineTimes] = useState<{ id: number; timeRemaining: string }[]>([]);
-	const [nextRoutineTime, setNextRoutineTime] = useState<String>();
+	const [nextRoutineTime, setNextRoutineTime] = useState<String | null>();
 
 	useEffect(() => {
 		const fetchTimes = async () => {
@@ -38,6 +38,8 @@ export default function Index() {
 			if (nextRoutine) {
 				const nextRoutineTime = await getRemainingTime(nextRoutine.id);
 				setNextRoutineTime(nextRoutineTime);
+			} else {
+				setNextRoutineTime(null);
 			}
 		};
 

@@ -18,7 +18,7 @@ export default function RoutineCard({ id, name, timeRemaining, enabled }: Routin
 	const toggleSwitch = async () => {
 		setIsEnabled((previousState) => !previousState);
 
-		await db.update(routineSchema).set({ enabled: isEnabled }).where(eq(routineSchema.id, id));
+		await db.update(routineSchema).set({ enabled: !isEnabled }).where(eq(routineSchema.id, id));
 	};
 
 	return (

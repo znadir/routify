@@ -84,7 +84,9 @@ export const getRemainingTime = async (routineId: number) => {
 };
 
 export const getNextRoutine = async (routines: Routine[]) => {
-	const routineTasksPromises = routines.map(async (routine) => {
+	const activeRoutines = routines.filter((routine) => routine.enabled);
+
+	const routineTasksPromises = activeRoutines.map(async (routine) => {
 		const firstTask = await getFirstTaskOfRoutine(routine.id);
 		return { id: routine.id, firstTask };
 	});
@@ -99,13 +101,15 @@ export const getNextRoutine = async (routines: Routine[]) => {
 
 	const minElapsedSinceMidnight = new Date().getHours() * 60 + new Date().getMinutes();
 
-	const nextRoutine = routineTasks.find(
+	let nextRoutineTask = routineTasks.find(
 		(routineTask) => routineTask.firstTask.startDayMin > minElapsedSinceMidnight
 	);
 
-	if (!nextRoutine) {
-		return routineTasks[0];
+	if (!nextRoutineTask) {
+		nextRoutineTask = routineTasks[0];
 	}
+
+	const nextRoutine = activeRoutines.find((routine) => routine.id === nextRoutineTask.id);
 
 	return nextRoutine;
 };
