@@ -6,7 +6,7 @@ import { View, StyleSheet, Switch, Pressable, Alert, ActivityIndicator } from "r
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
-import { getTasks, timeRangeToString } from "@/utils/utils";
+import { deleteTasks, getTasks, timeRangeToString } from "@/utils/utils";
 import { routineSchema, routineTaskSchema, taskSchema } from "../utils/schema";
 import db from "../utils/db";
 import { eq } from "drizzle-orm";
@@ -136,6 +136,7 @@ export default function Routine() {
 	const deleteRoutine = () => {
 		const confirmDelete = async () => {
 			if (routineId) {
+				await deleteTasks(parseInt(routineId));
 				await db.delete(routineSchema).where(eq(routineSchema.id, parseInt(routineId)));
 			}
 
@@ -195,15 +196,7 @@ export default function Routine() {
 			return;
 		}
 
-		// delete all routineTasks and tasks to recreate them
-		const tasks = await getTasks(parseInt(routineId));
-
-		tasks.forEach(async (task) => {
-			await db.delete(taskSchema).where(eq(taskSchema.id, task.id));
-		});
-
-		await db.delete(routineTaskSchema).where(eq(routineTaskSchema.routineId, parseInt(routineId)));
-
+		await deleteTasks(parseInt(routineId));
 		await createTasks(parseInt(routineId));
 
 		await db

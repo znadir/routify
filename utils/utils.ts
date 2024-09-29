@@ -35,3 +35,13 @@ export const getTasks = async (routineId: number) => {
 
 	return sortedTasks;
 };
+
+export const deleteTasks = async (routineId: number) => {
+	const tasks = await getTasks(routineId);
+
+	tasks.forEach(async (task) => {
+		await db.delete(taskSchema).where(eq(taskSchema.id, task.id));
+	});
+
+	await db.delete(routineTaskSchema).where(eq(routineTaskSchema.routineId, routineId));
+};
