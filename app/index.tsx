@@ -11,12 +11,36 @@ import PlusIcon from "@/assets/svg/plus-icon.svg";
 import NoRoutine from "@/assets/svg/no-routine.svg";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
+import { getRemainingTime } from "@/utils/utils";
+import { useEffect, useState } from "react";
 
 export default function Index() {
 	setBackgroundColorAsync("black");
 
 	const { data } = useLiveQuery(db.select().from(routineSchema));
 	const { success, error } = useMigrations(db, migrations);
+	const [routineTimes, setRoutineTimes] = useState<{ id: number; timeRemaining: string }[]>([]);
+
+	useEffect(() => {
+		const fetchTimes = async () => {
+			const times = await Promise.all(
+				data.map(async (routine) => {
+					const timeRemaining = await getRemainingTime(routine.id);
+					return { id: routine.id, timeRemaining };
+				})
+			);
+
+			setRoutineTimes(times);
+
+			const intervalId = setInterval(fetchTimes, 60000);
+
+			return () => clearInterval(intervalId);
+		};
+
+		if (data) {
+			fetchTimes();
+		}
+	}, [data]);
 
 	if (error) {
 		return (
@@ -75,15 +99,20 @@ export default function Index() {
 			</View>
 
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.routines}>
-				{data.map((routine) => (
-					<RoutineCard
-						key={routine.id}
-						id={routine.id}
-						name={routine.name}
-						timeRemaining='18 min 10 sec'
-						enabled={routine.enabled}
-					/>
-				))}
+				{data.map((routine) => {
+					const timeRemaining =
+						routineTimes.find((time) => time.id === routine.id)?.timeRemaining || "";
+
+					return (
+						<RoutineCard
+							key={routine.id}
+							id={routine.id}
+							name={routine.name}
+							timeRemaining={timeRemaining}
+							enabled={routine.enabled}
+						/>
+					);
+				})}
 				{data.length == 0 && <NoRoutine />}
 			</ScrollView>
 
