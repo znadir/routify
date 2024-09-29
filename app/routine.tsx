@@ -272,20 +272,7 @@ export default function Routine() {
 		]);
 	};
 
-	const saveRoutine = async () => {
-		const routines = await db
-			.insert(routineSchema)
-			.values({
-				name: routineName,
-				enabled: true,
-				alarmName,
-				enableAlarm,
-			})
-			.returning({ insertedId: routineSchema.id });
-
-		const routineId = routines[0].insertedId;
-
-		// insert tasks
+	const createTasks = (routineId: number) => {
 		tasks.forEach(async (task) => {
 			const taskId = await db
 				.insert(taskSchema)
@@ -301,6 +288,46 @@ export default function Routine() {
 				taskId: taskId[0].insertedId,
 			});
 		});
+	};
+
+	const createRoutine = async () => {
+		const routines = await db
+			.insert(routineSchema)
+			.values({
+				name: routineName,
+				enabled: true,
+				alarmName,
+				enableAlarm,
+			})
+			.returning({ insertedId: routineSchema.id });
+
+		const routineId = routines[0].insertedId;
+
+		createTasks(routineId);
+
+		router.back();
+	};
+
+	const saveRoutine = async () => {
+		if (!routineId) {
+			return;
+		}
+
+		// delete all routineTasks and tasks to recreate them
+		const tasks = await getTasks(parseInt(routineId));
+
+		tasks.forEach(async (task) => {
+			await db.delete(taskSchema).where(eq(taskSchema.id, task.id));
+		});
+
+		await db.delete(routineTaskSchema).where(eq(routineTaskSchema.routineId, parseInt(routineId)));
+
+		await createTasks(parseInt(routineId));
+
+		await db
+			.update(routineSchema)
+			.set({ name: routineName, alarmName, enableAlarm })
+			.where(eq(routineSchema.id, parseInt(routineId)));
 
 		router.back();
 	};
@@ -381,7 +408,13 @@ export default function Routine() {
 
 			<View style={[styles.bottom, styles.buttons, { paddingBottom: 10 }]}>
 				<Button
-					onPress={() => saveRoutine()}
+					onPress={() => {
+						if (routineId) {
+							saveRoutine();
+						} else {
+							createRoutine();
+						}
+					}}
 					style={({ pressed }) => [{ backgroundColor: pressed ? "#278227" : "#237023", flex: 1 }]}
 				>
 					<ThemedText>Save</ThemedText>
