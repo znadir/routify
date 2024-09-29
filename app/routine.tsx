@@ -247,7 +247,9 @@ export default function Routine() {
 			}
 		});
 
-		setTasks([...tasks, { name: taskName, startDayMin, endDayMin }]);
+		const newTasks = [...tasks, { name: taskName, startDayMin, endDayMin }];
+		const sortedTasks = newTasks.sort((a, b) => a.startDayMin - b.startDayMin);
+		setTasks(sortedTasks);
 		setModalVisible(false);
 	};
 

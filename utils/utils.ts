@@ -31,5 +31,7 @@ export const getTasks = async (routineId: number) => {
 
 	const tasks = await Promise.all(tasksPromises);
 
-	return tasks;
+	const sortedTasks = tasks.sort((a, b) => a.startDayMin - b.startDayMin);
+
+	return sortedTasks;
 };
