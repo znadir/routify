@@ -16,9 +16,9 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
-import { timeRangeToString } from "@/utils/utils";
+import { getTasks, timeRangeToString } from "@/utils/utils";
 import Toast from "react-native-root-toast";
-import { routineSchema } from "../utils/schema";
+import { routineSchema, routineTaskSchema, taskSchema } from "../utils/schema";
 import db from "../utils/db";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -134,17 +134,17 @@ function AddTaskModal({
 }
 
 function TaskCard({
-	title,
+	name,
 	timeRange,
 	onDelete,
 }: {
-	title: string;
+	name: string;
 	timeRange: string;
 	onDelete: Function;
 }) {
 	return (
 		<View style={styles.taskCard}>
-			<ThemedText style={styles.cardText}>{title}</ThemedText>
+			<ThemedText style={styles.cardText}>{name}</ThemedText>
 			<View style={styles.taskCardRight}>
 				<ThemedText style={styles.cardText}>{timeRange}</ThemedText>
 				<Button
@@ -162,7 +162,7 @@ function TaskCard({
 }
 
 interface Task {
-	title: string;
+	name: string;
 	startDayMin: number;
 	endDayMin: number;
 }
@@ -186,10 +186,17 @@ export default function Routine() {
 	const [modalVisible, setModalVisible] = useState(false);
 
 	useEffect(() => {
-		if (routineId) {
-			setRoutineName(data[0]?.name);
-			setEnableAlarm(data[0]?.enableAlarm);
+		async function syncRoutine() {
+			if (routineId) {
+				const tasks = await getTasks(parseInt(routineId));
+
+				setRoutineName(data[0]?.name);
+				setEnableAlarm(data[0]?.enableAlarm);
+				setTasks(tasks);
+			}
 		}
+
+		syncRoutine();
 	}, [data]);
 
 	const addTask = (
@@ -240,7 +247,7 @@ export default function Routine() {
 			}
 		});
 
-		setTasks([...tasks, { title: taskName, startDayMin, endDayMin }]);
+		setTasks([...tasks, { name: taskName, startDayMin, endDayMin }]);
 		setModalVisible(false);
 	};
 
@@ -276,22 +283,24 @@ export default function Routine() {
 			})
 			.returning({ insertedId: routineSchema.id });
 
-		// insert tasks
-		// tasks.forEach(async (task) => {
-		// 	const taskId = await db
-		// 		.insert(taskSchema)
-		// 		.values({
-		// 			name: task.title,
-		// 			startDayMin: task.startDayMin,
-		// 			endDayMin: task.endDayMin,
-		// 		})
-		// 		.returning({ insertedId: taskSchema.id });
+		const routineId = routines[0].insertedId;
 
-		// 	await db.insert(routineTaskSchema).values({
-		// 		routineId: routineId.insertedId,
-		// 		taskId: taskId.insertedId,
-		// 	});
-		// });
+		// insert tasks
+		tasks.forEach(async (task) => {
+			const taskId = await db
+				.insert(taskSchema)
+				.values({
+					name: task.name,
+					startDayMin: task.startDayMin,
+					endDayMin: task.endDayMin,
+				})
+				.returning({ insertedId: taskSchema.id });
+
+			await db.insert(routineTaskSchema).values({
+				routineId: routineId,
+				taskId: taskId[0].insertedId,
+			});
+		});
 
 		router.back();
 	};
@@ -348,7 +357,7 @@ export default function Routine() {
 				{tasks.map((task, i) => (
 					<TaskCard
 						key={i}
-						title={task.title}
+						name={task.name}
 						timeRange={timeRangeToString(task.startDayMin, task.endDayMin)}
 						onDelete={() => {
 							const newTasks = [...tasks];
