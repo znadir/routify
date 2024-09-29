@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, min } from "drizzle-orm";
 import db from "./db";
 import { routineTaskSchema, taskSchema } from "./schema";
 
@@ -57,7 +57,11 @@ export const getRemainingTime = async (routineId: number) => {
 
 	const nextStartTime = nextTask ? nextTask.startDayMin : sortedTasks[0].startDayMin;
 
-	const remainingTime = nextStartTime - minElapsedSinceMidnight;
+	let remainingTime = nextStartTime - minElapsedSinceMidnight;
+
+	if (remainingTime < 0) {
+		remainingTime = 24 * 60 - minElapsedSinceMidnight + nextStartTime;
+	}
 
 	const hours = Math.floor(remainingTime / 60);
 	const minutes = remainingTime % 60;
