@@ -2,7 +2,15 @@ import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import AddIcon from "@/assets/svg/add-icon.svg";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Switch, Pressable, Alert, ActivityIndicator } from "react-native";
+import {
+	View,
+	StyleSheet,
+	Switch,
+	Pressable,
+	Alert,
+	ActivityIndicator,
+	ScrollView,
+} from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
@@ -255,7 +263,7 @@ export default function Routine() {
 				/>
 			</Pressable>
 
-			<View style={styles.cardsContainer}>
+			<ScrollView contentContainerStyle={styles.cardsContainer}>
 				{tasks.map((task, i) => (
 					<TaskCard
 						key={i}
@@ -279,7 +287,7 @@ export default function Routine() {
 					<AddIcon />
 					<ThemedText style={styles.cardText}>Add Task</ThemedText>
 				</Pressable>
-			</View>
+			</ScrollView>
 
 			<View style={[styles.bottom, styles.buttons, { paddingBottom: 10 }]}>
 				<Button
@@ -346,6 +354,7 @@ const styles = StyleSheet.create({
 	},
 	cardsContainer: {
 		gap: 15,
+		paddingBottom: 70,
 	},
 	taskCard: {
 		flexDirection: "row",
