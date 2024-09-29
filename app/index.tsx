@@ -31,14 +31,14 @@ export default function Index() {
 			);
 
 			setRoutineTimes(times);
-
-			const intervalId = setInterval(fetchTimes, 60000);
-
-			return () => clearInterval(intervalId);
 		};
 
 		if (data) {
 			fetchTimes();
+
+			const intervalId = setInterval(fetchTimes, 1000);
+
+			return () => clearInterval(intervalId);
 		}
 	}, [data]);
 
