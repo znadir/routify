@@ -11,7 +11,7 @@ import PlusIcon from "@/assets/svg/plus-icon.svg";
 import NoRoutine from "@/assets/svg/no-routine.svg";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import { getRemainingTime } from "@/utils/utils";
+import { getNextRoutine, getRemainingTime } from "@/utils/utils";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -20,6 +20,7 @@ export default function Index() {
 	const { data } = useLiveQuery(db.select().from(routineSchema));
 	const { success, error } = useMigrations(db, migrations);
 	const [routineTimes, setRoutineTimes] = useState<{ id: number; timeRemaining: string }[]>([]);
+	const [nextRoutineTime, setNextRoutineTime] = useState<String>();
 
 	useEffect(() => {
 		const fetchTimes = async () => {
@@ -31,6 +32,13 @@ export default function Index() {
 			);
 
 			setRoutineTimes(times);
+
+			// Update next routine time
+			const nextRoutine = await getNextRoutine(data);
+			if (nextRoutine) {
+				const nextRoutineTime = await getRemainingTime(nextRoutine.id);
+				setNextRoutineTime(nextRoutineTime);
+			}
 		};
 
 		if (data) {
@@ -62,9 +70,9 @@ export default function Index() {
 			<View style={styles.header}>
 				{data.length == 0 ? (
 					<ThemedText style={styles.title}>No Routine Found. {"\n"}</ThemedText>
-				) : false ? (
+				) : nextRoutineTime ? (
 					<ThemedText style={styles.title}>
-						Next Routine in <ThemedText style={styles.important}>16h 10 min</ThemedText>
+						Next Routine in <ThemedText style={styles.important}>{nextRoutineTime}</ThemedText>
 					</ThemedText>
 				) : (
 					<>

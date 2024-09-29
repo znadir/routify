@@ -15,6 +15,8 @@ export const routineSchema = sqliteTable("routine", {
 	enableAlarm: integer("enableAlarm", { mode: "boolean" }).notNull().default(false),
 });
 
+export type Routine = typeof routineSchema.$inferSelect;
+
 export const routineTaskSchema = sqliteTable("routineTask", {
 	id: integer("id").primaryKey(),
 	routineId: integer("routineId")
