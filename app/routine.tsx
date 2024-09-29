@@ -264,6 +264,17 @@ export default function Routine() {
 			</Pressable>
 
 			<ScrollView contentContainerStyle={styles.cardsContainer}>
+				<Pressable
+					onPress={() => setModalVisible(true)}
+					style={({ pressed }) => [
+						styles.addCard,
+						{ backgroundColor: pressed ? "#2b2b2b" : "#212121" },
+					]}
+				>
+					<AddIcon />
+					<ThemedText style={styles.cardText}>Add Task</ThemedText>
+				</Pressable>
+
 				{tasks.map((task, i) => (
 					<TaskCard
 						key={i}
@@ -276,17 +287,6 @@ export default function Routine() {
 						}}
 					/>
 				))}
-
-				<Pressable
-					onPress={() => setModalVisible(true)}
-					style={({ pressed }) => [
-						styles.addCard,
-						{ backgroundColor: pressed ? "#2b2b2b" : "#212121" },
-					]}
-				>
-					<AddIcon />
-					<ThemedText style={styles.cardText}>Add Task</ThemedText>
-				</Pressable>
 			</ScrollView>
 
 			<View style={[styles.bottom, styles.buttons, { paddingBottom: 10 }]}>
@@ -373,7 +373,8 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		borderRadius: 10,
-		padding: 20,
+		paddingHorizontal: 20,
+		paddingVertical: 26,
 		gap: 10,
 	},
 	cardText: {

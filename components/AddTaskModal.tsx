@@ -34,6 +34,11 @@ export default function AddTaskModal({
 		try {
 			addTask(taskName, startHour, startMinute, endHour, endMinute);
 			setTaskName("");
+			// increase default values to prevent overlap
+			setStartHour(endHour);
+			setStartMinute((parseInt(endMinute) + 1).toString().padStart(2, "0"));
+			setEndHour((parseInt(endHour) + 1).toString().padStart(2, "0"));
+			setEndMinute("00");
 		} catch (e: any) {
 			Toast.show(e.toString(), {
 				backgroundColor: "red",
