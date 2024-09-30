@@ -4,14 +4,20 @@ import RoutineCard from "@/components/RoutineCard";
 import { setBackgroundColorAsync } from "expo-navigation-bar";
 import CircularProgress from "react-native-circular-progress-indicator";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { routineSchema } from "../utils/schema";
+import { routineSchema, Task } from "../utils/schema";
 import db from "../utils/db";
 import { router } from "expo-router";
 import PlusIcon from "@/assets/svg/plus-icon.svg";
 import NoRoutine from "@/assets/svg/no-routine.svg";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import { getNextRoutine, getRemainingTime } from "@/utils/utils";
+import {
+	getCurrentTask,
+	getNextRoutine,
+	getProgressTask,
+	getRemainingTimeEndTask,
+	getRemainingTimeRoutine,
+} from "@/utils/utils";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -21,12 +27,15 @@ export default function Index() {
 	const { success, error } = useMigrations(db, migrations);
 	const [routineTimes, setRoutineTimes] = useState<{ id: number; timeRemaining: string }[]>([]);
 	const [nextRoutineTime, setNextRoutineTime] = useState<String | null>();
+	const [currentTask, setCurrentTask] = useState<Task | null>();
+	const [remainingTimeEndTask, setRemainingTimeEndTask] = useState<String | null>();
+	const [progressTask, setProgressTask] = useState<number>(0);
 
 	useEffect(() => {
 		const fetchTimes = async () => {
 			const times = await Promise.all(
 				data.map(async (routine) => {
-					const timeRemaining = await getRemainingTime(routine.id);
+					const timeRemaining = await getRemainingTimeRoutine(routine.id);
 					return { id: routine.id, timeRemaining };
 				})
 			);
@@ -36,10 +45,24 @@ export default function Index() {
 			// Update next routine time
 			const nextRoutine = await getNextRoutine(data);
 			if (nextRoutine) {
-				const nextRoutineTime = await getRemainingTime(nextRoutine.id);
+				const nextRoutineTime = await getRemainingTimeRoutine(nextRoutine.id);
 				setNextRoutineTime(nextRoutineTime);
 			} else {
 				setNextRoutineTime(null);
+			}
+
+			// Update current task
+			const currentTask = await getCurrentTask(data);
+			setCurrentTask(currentTask);
+
+			if (currentTask) {
+				const remainingTimeEndTask = await getRemainingTimeEndTask(currentTask);
+				setRemainingTimeEndTask(remainingTimeEndTask);
+				const progressTask = await getProgressTask(currentTask);
+				setProgressTask(progressTask);
+			} else {
+				setRemainingTimeEndTask(null);
+				setProgressTask(0);
 			}
 		};
 
@@ -72,39 +95,31 @@ export default function Index() {
 			<View style={styles.header}>
 				{data.length == 0 ? (
 					<ThemedText style={styles.title}>No Routine Found. {"\n"}</ThemedText>
-				) : nextRoutineTime ? (
-					<ThemedText style={styles.title}>
-						Next Routine in <ThemedText style={styles.important}>{nextRoutineTime}</ThemedText>
-					</ThemedText>
-				) : (
+				) : currentTask ? (
 					<>
-						<ThemedText style={[styles.title, styles.important]}>Déjeuner</ThemedText>
-						<ThemedText style={styles.subtitle}>13 min 10 sec left</ThemedText>
+						<ThemedText style={[styles.title, styles.important]}>{currentTask.name}</ThemedText>
+						<ThemedText style={styles.subtitle}>{remainingTimeEndTask} left</ThemedText>
 						<View style={{ alignItems: "center" }}>
 							<CircularProgress
 								activeStrokeColor={"#3700FF"}
 								inActiveStrokeColor={"#ffffff"}
 								progressValueStyle={{ fontSize: 20, fontWeight: "400", color: "white" }}
-								value={630}
+								value={progressTask}
 								radius={65}
 								duration={0}
 								progressFormatter={(value: number) => {
 									"worklet";
-									const hours = Math.floor(value / 3600);
-									const minutes = Math.floor((value % 3600) / 60);
-									const seconds = Math.floor(value % 60);
-
-									const pad = (num: any) => (num < 10 ? `0${num}` : num);
-
-									return hours > 0
-										? `${hours}:${pad(minutes)}:${pad(seconds)}`
-										: minutes > 0
-										? `${minutes}:${pad(seconds)}`
-										: `${seconds}`;
+									return `${value.toFixed(0)} %`;
 								}}
 							/>
 						</View>
 					</>
+				) : nextRoutineTime ? (
+					<ThemedText style={styles.title}>
+						Next Routine in <ThemedText style={styles.important}>{nextRoutineTime}</ThemedText>
+					</ThemedText>
+				) : (
+					<ThemedText style={styles.title}>No Routine For Today.</ThemedText>
 				)}
 			</View>
 

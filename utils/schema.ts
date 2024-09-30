@@ -7,6 +7,8 @@ export const taskSchema = sqliteTable("task", {
 	endDayMin: integer("endDayMin").notNull(),
 });
 
+export type Task = typeof taskSchema.$inferSelect;
+
 export const routineSchema = sqliteTable("routine", {
 	id: integer("id").primaryKey(),
 	name: text("name").notNull(),

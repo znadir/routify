@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "./db";
-import { routineTaskSchema, taskSchema, Routine } from "./schema";
+import { routineTaskSchema, taskSchema, Routine, Task } from "./schema";
 
 export function timeRangeToString(startDayMin: number, endDayMin: number) {
 	const startHour = Math.floor(startDayMin / 60);
@@ -63,24 +63,48 @@ export const getFirstTaskOfRoutine = async (routineId: number) => {
 	return nextTask;
 };
 
-export const getRemainingTime = async (routineId: number) => {
+export const getRemainingTime = (targetMin: number) => {
 	const minElapsedSinceMidnight = new Date().getHours() * 60 + new Date().getMinutes();
 
-	// find the first task that hasn't started yet
-	const nextTask = await getFirstTaskOfRoutine(routineId);
-
-	const nextStartTime = nextTask.startDayMin;
-
-	let remainingTime = nextStartTime - minElapsedSinceMidnight;
+	let remainingTime = targetMin - minElapsedSinceMidnight;
 
 	if (remainingTime < 0) {
-		remainingTime = 24 * 60 - minElapsedSinceMidnight + nextStartTime;
+		remainingTime = 24 * 60 - minElapsedSinceMidnight + targetMin;
 	}
 
 	const hours = Math.floor(remainingTime / 60);
-	const minutes = remainingTime % 60;
+	const minutes = (remainingTime % 60).toString().padStart(2, "0");
+
+	if (hours === 0) {
+		return `${minutes} min`;
+	}
 
 	return `${hours} h ${minutes} min`;
+};
+
+export const getRemainingTimeRoutine = async (routineId: number) => {
+	const nextTask = await getFirstTaskOfRoutine(routineId);
+
+	const remainingTime = getRemainingTime(nextTask.startDayMin);
+
+	return remainingTime;
+};
+
+export const getRemainingTimeEndTask = async (task: Task) => {
+	const remainingTime = getRemainingTime(task.endDayMin);
+
+	return remainingTime;
+};
+
+export const getProgressTask = async (task: Task) => {
+	const minElapsedSinceMidnight = new Date().getHours() * 60 + new Date().getMinutes();
+
+	const taskLength = task.endDayMin - task.startDayMin;
+	const taskAchieved = minElapsedSinceMidnight - task.startDayMin;
+
+	const progress = (taskAchieved / taskLength) * 100;
+
+	return progress;
 };
 
 export const getNextRoutine = async (routines: Routine[]) => {
@@ -112,4 +136,30 @@ export const getNextRoutine = async (routines: Routine[]) => {
 	const nextRoutine = activeRoutines.find((routine) => routine.id === nextRoutineTask.id);
 
 	return nextRoutine;
+};
+
+export const getCurrentTask = async (routines: Routine[]) => {
+	const activeRoutines = routines.filter((routine) => routine.enabled);
+
+	const routineTasksPromises = activeRoutines.map(async (routine) => {
+		const tasks = await getTasks(routine.id);
+		return { id: routine.id, tasks };
+	});
+
+	const routineTasks = await Promise.all(routineTasksPromises);
+
+	const minElapsedSinceMidnight = new Date().getHours() * 60 + new Date().getMinutes();
+
+	const currentTask = routineTasks
+		.flatMap((routineTask) => routineTask.tasks)
+		.find(
+			(task) =>
+				task.startDayMin <= minElapsedSinceMidnight && task.endDayMin >= minElapsedSinceMidnight
+		);
+
+	if (!currentTask) {
+		return null;
+	}
+
+	return currentTask;
 };
