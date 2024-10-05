@@ -20,7 +20,6 @@ import db from "../utils/db";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import AddTaskModal from "@/components/AddTaskModal";
-import { scheduleAlarm } from "../modules/expo-alarm/index";
 
 function TaskCard({
 	name,
