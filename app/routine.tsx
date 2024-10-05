@@ -14,12 +14,13 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import TrashIcon from "@/assets/svg/trash-icon.svg";
-import { deleteTasks, getTasks, timeRangeToString } from "@/utils/utils";
+import { deleteTasks, getFirstTaskOfRoutine, getTasks, timeRangeToString } from "@/utils/utils";
 import { routineSchema, routineTaskSchema, taskSchema } from "../utils/schema";
 import db from "../utils/db";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import AddTaskModal from "@/components/AddTaskModal";
+import { scheduleAlarm } from "../modules/expo-alarm/index";
 
 function TaskCard({
 	name,
@@ -164,7 +165,7 @@ export default function Routine() {
 	};
 
 	const createTasks = (routineId: number) => {
-		tasks.forEach(async (task) => {
+		const promises = tasks.map(async (task) => {
 			const taskId = await db
 				.insert(taskSchema)
 				.values({
@@ -179,6 +180,8 @@ export default function Routine() {
 				taskId: taskId[0].insertedId,
 			});
 		});
+
+		return Promise.all(promises);
 	};
 
 	const createRoutine = async () => {
@@ -192,9 +195,16 @@ export default function Routine() {
 			})
 			.returning({ insertedId: routineSchema.id });
 
-		const routineId = routines[0].insertedId;
+		const routine = routines[0];
+		const routineId = routine.insertedId;
 
-		createTasks(routineId);
+		await createTasks(routineId);
+
+		const firstTask = await getFirstTaskOfRoutine(routineId);
+		const hour = Math.floor(firstTask.startDayMin / 60);
+		const minutes = firstTask.startDayMin % 60;
+
+		// TODO : schedule alarm
 
 		router.back();
 	};
